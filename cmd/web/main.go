@@ -11,45 +11,47 @@ import (
 	"time"
 )
 
-const PORT = ":8080"
+const portNumber = ":8080"
 
 var app config.AppConfig
 var session *scs.SessionManager
 
+// main is the main function
 func main() {
-
-	// change this to `true` when in production
+	// change this to true when in production
 	app.InProduction = false
 
+	// set up the session
 	session = scs.New()
 	session.Lifetime = 24 * time.Hour
 	session.Cookie.Persist = true
 	session.Cookie.SameSite = http.SameSiteLaxMode
 	session.Cookie.Secure = app.InProduction
 
-	// set the app.Session
 	app.Session = session
 
-	templateCache, err := render.CreateTemplateCache()
+	tc, err := render.CreateTemplateCache()
 	if err != nil {
 		log.Fatal("cannot create template cache")
 	}
 
-	app.TemplateCache = templateCache
+	app.TemplateCache = tc
 	app.UseCache = false
 
 	repo := handlers.NewRepo(&app)
 	handlers.NewHandlers(repo)
 
 	render.NewTemplates(&app)
-	fmt.Println(fmt.Sprintf("Starting web server on the http://localhost%s", PORT))
+
+	fmt.Println(fmt.Sprintf("Staring application on port http://localhost%s", portNumber))
 
 	srv := &http.Server{
-		Addr:    PORT,
+		Addr:    portNumber,
 		Handler: routes(&app),
 	}
+
 	err = srv.ListenAndServe()
 	if err != nil {
-		log.Fatal("error starting the server:", err)
+		log.Fatal(err)
 	}
 }
