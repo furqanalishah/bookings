@@ -154,6 +154,19 @@
             })
         }
 
+        {{with .Error}}
+        notify("{{.}}", "error")
+        {{end}}
+
+        {{with .Flash}}
+        notify("{{.}}", "success")
+        {{end}}
+
+        {{with .Warning}}
+        notify("{{.}}", "warning")
+        {{end}}
+
+
         function Prompt() {
             let toast = function (c) {
                 const {
@@ -227,9 +240,9 @@
                     willOpen: () => {
                         const elem = document.getElementById("reservation-dates-modal");
                         const rp = new DateRangePicker(elem, {
-                                format: 'yyyy-mm-dd',
-                                showOnFocus: true,
-                            })
+                            format: 'yyyy-mm-dd',
+                            showOnFocus: true,
+                        })
                     },
                     didOpen: () => {
                         document.getElementById("start").removeAttribute("disabled");
